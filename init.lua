@@ -75,6 +75,11 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Upper window" })
 
+-- [[GIT keymaps]]
+vim.keymap.set("n", "<leader>gs", function()
+	vim.cmd("Neotree toggle source=git_status")
+end, { desc = "Git [S]tatus (Neo-tree)" })
+
 -- [[ Autocommands ]]
 -- highlight yank
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -85,13 +90,12 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- spell check for markdown
+-- spell checking for specific filetypes
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = "markdown",
-	group = vim.api.nvim_create_augroup("markdown-spell", { clear = true }),
+	pattern = { "markdown", "text", "gitcommit" },
 	callback = function()
 		vim.opt_local.spell = true
-		vim.opt_local.spelllang = "en_nz"
+		vim.opt_local.spelllang = "en_us"
 	end,
 })
 
@@ -112,18 +116,7 @@ require("lazy").setup({
 
 	"NMAC427/guess-indent.nvim", -- auto tabstop detection
 
-	{ -- git signs in gutter
-		"lewis6991/gitsigns.nvim",
-		opts = {
-			signs = {
-				add = { text = "+" },
-				change = { text = "~" },
-				delete = { text = "_" },
-				topdelete = { text = "‾" },
-				changedelete = { text = "~" },
-			},
-		},
-	},
+	{ import = "git" },
 
 	{ -- keymap hints
 		"folke/which-key.nvim",
@@ -133,14 +126,24 @@ require("lazy").setup({
 			icons = {
 				mappings = vim.g.have_nerd_font,
 				keys = vim.g.have_nerd_font and {} or {
-					Up = "<Up> ", Down = "<Down> ", Left = "<Left> ", Right = "<Right> ",
-					C = "<C-…> ", M = "<M-…> ", D = "<D-…> ", S = "<S-…> ",
-					CR = "<CR> ", Esc = "<Esc> ", Space = "<Space> ", Tab = "<Tab> ",
+					Up = "<Up> ",
+					Down = "<Down> ",
+					Left = "<Left> ",
+					Right = "<Right> ",
+					C = "<C-…> ",
+					M = "<M-…> ",
+					D = "<D-…> ",
+					S = "<S-…> ",
+					CR = "<CR> ",
+					Esc = "<Esc> ",
+					Space = "<Space> ",
+					Tab = "<Tab> ",
 				},
 			},
 			spec = {
 				{ "<leader>s", group = "[S]earch" },
 				{ "<leader>t", group = "[T]oggle" },
+				{ "<leader>g", group = "[G]it" },
 				{ "<leader>h", group = "Git [H]unk", mode = { "n", "v" } },
 			},
 		},
@@ -151,7 +154,13 @@ require("lazy").setup({
 		event = "VimEnter",
 		dependencies = {
 			"nvim-lua/plenary.nvim",
-			{ "nvim-telescope/telescope-fzf-native.nvim", build = "make", cond = function() return vim.fn.executable("make") == 1 end },
+			{
+				"nvim-telescope/telescope-fzf-native.nvim",
+				build = "make",
+				cond = function()
+					return vim.fn.executable("make") == 1
+				end,
+			},
 			{ "nvim-telescope/telescope-ui-select.nvim" },
 			{ "nvim-tree/nvim-web-devicons", enabled = vim.g.have_nerd_font },
 		},
@@ -268,7 +277,9 @@ require("lazy").setup({
 				"L3MON4D3/LuaSnip",
 				version = "2.*",
 				build = (function()
-					if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then return end
+					if vim.fn.has("win32") == 1 or vim.fn.executable("make") == 0 then
+						return
+					end
 					return "make install_jsregexp"
 				end)(),
 				opts = {},
@@ -316,7 +327,9 @@ require("lazy").setup({
 			require("mini.surround").setup()
 			local statusline = require("mini.statusline")
 			statusline.setup({ use_icons = vim.g.have_nerd_font })
-			statusline.section_location = function() return "%2l:%-2v" end
+			statusline.section_location = function()
+				return "%2l:%-2v"
+			end
 		end,
 	},
 
@@ -326,8 +339,17 @@ require("lazy").setup({
 		main = "nvim-treesitter.configs",
 		opts = {
 			ensure_installed = {
-				"bash", "c", "diff", "html", "lua", "luadoc",
-				"markdown", "markdown_inline", "query", "vim", "vimdoc",
+				"bash",
+				"c",
+				"diff",
+				"html",
+				"lua",
+				"luadoc",
+				"markdown",
+				"markdown_inline",
+				"query",
+				"vim",
+				"vimdoc",
 			},
 			auto_install = true,
 			highlight = {
@@ -371,13 +393,22 @@ require("lazy").setup({
 			},
 		},
 	},
-
 }, {
 	ui = {
 		icons = vim.g.have_nerd_font and {} or {
-			cmd = "⌘", config = "🛠", event = "📅", ft = "📂", init = "⚙",
-			keys = "🗝", plugin = "🔌", runtime = "💻", require = "🌙",
-			source = "📄", start = "🚀", task = "📌", lazy = "💤 ",
+			cmd = "⌘",
+			config = "🛠",
+			event = "📅",
+			ft = "📂",
+			init = "⚙",
+			keys = "🗝",
+			plugin = "🔌",
+			runtime = "💻",
+			require = "🌙",
+			source = "📄",
+			start = "🚀",
+			task = "📌",
+			lazy = "💤 ",
 		},
 	},
 })
