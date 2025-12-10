@@ -38,6 +38,9 @@ vim.o.signcolumn = "yes"
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 
+-- autosave delay (1 minute = 60000ms)
+vim.g.autosave_updatetime = 60000
+
 -- splits open to right/below
 vim.o.splitright = true
 vim.o.splitbelow = true
@@ -96,6 +99,24 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function()
 		vim.opt_local.spell = true
 		vim.opt_local.spelllang = "en_us"
+	end,
+})
+
+vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
+	desc = "Autosave after inactivity",
+	group = vim.api.nvim_create_augroup("autosave", { clear = true }),
+	callback = function(event)
+		local timer_started = vim.b[event.buf].autosave_timer_started
+		if not timer_started then
+			vim.b[event.buf].autosave_timer_started = true
+			vim.defer_fn(function()
+				if vim.api.nvim_buf_is_valid(event.buf) and vim.bo[event.buf].modified and vim.bo[event.buf].buftype == "" and vim.fn.expand("%") ~= "" then
+					vim.cmd("silent! write")
+					print("Autosaved")
+				end
+				vim.b[event.buf].autosave_timer_started = false
+			end, vim.g.autosave_updatetime)
+		end
 	end,
 })
 
