@@ -78,6 +78,26 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Right window" })
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Upper window" })
 
+-- toggle terminal with \t
+vim.keymap.set({ "n", "t" }, "\\t", function()
+	local term_buf = vim.g.toggle_term_buf
+	if term_buf and vim.api.nvim_buf_is_valid(term_buf) then
+		local term_win = vim.fn.bufwinid(term_buf)
+		if term_win ~= -1 then
+			vim.api.nvim_win_close(term_win, false)
+		else
+			vim.cmd("botright split")
+			vim.api.nvim_win_set_buf(0, term_buf)
+			vim.cmd("resize 15")
+			vim.cmd("startinsert")
+		end
+	else
+		vim.cmd("botright split | resize 15 | terminal")
+		vim.g.toggle_term_buf = vim.api.nvim_get_current_buf()
+		vim.cmd("startinsert")
+	end
+end, { desc = "Toggle terminal" })
+
 -- [[GIT keymaps]]
 vim.keymap.set("n", "<leader>gs", function()
 	vim.cmd("Neotree toggle source=git_status")
