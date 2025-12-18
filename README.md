@@ -29,6 +29,10 @@ git clone https://github.com/jaorow/nvim ~/.config/nvim
 I use `iterm2` with a nerd font installed to not mess up colors and have cool icons
 if you dont want to use a nerd font toggle it off in the `init.lua`
 
+## Nerd font
+The nerd font i like to use currnetly is jetbrains mono
+install it with `brew install --cask font-jetbrains-mono-nerd-font`
+then change the text in iterm profile
 
 ## RUN
 
