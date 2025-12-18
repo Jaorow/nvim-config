@@ -130,11 +130,16 @@ vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 		if not timer_started then
 			vim.b[event.buf].autosave_timer_started = true
 			vim.defer_fn(function()
-				if vim.api.nvim_buf_is_valid(event.buf) and vim.bo[event.buf].modified and vim.bo[event.buf].buftype == "" and vim.fn.expand("%") ~= "" then
+				if not vim.api.nvim_buf_is_valid(event.buf) then
+					return
+				end
+				if vim.bo[event.buf].modified and vim.bo[event.buf].buftype == "" and vim.fn.expand("%") ~= "" then
 					vim.cmd("silent! write")
 					print("Autosaved")
 				end
-				vim.b[event.buf].autosave_timer_started = false
+				if vim.api.nvim_buf_is_valid(event.buf) then
+					vim.b[event.buf].autosave_timer_started = false
+				end
 			end, vim.g.autosave_updatetime)
 		end
 	end,
