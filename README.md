@@ -41,3 +41,8 @@ Open Neovim — plugins will install automatically:
 ```sh
 nvim
 ```
+
+## Extra steps
+- install lazy git and better grep
+    - `brew install ripgrep`
+    - `brew install lazygit`
